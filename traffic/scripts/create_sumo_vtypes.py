@@ -116,7 +116,7 @@ def main(args):
     Main method.
     """
     client = carla.Client(args.carla_host, args.carla_port)
-    client.set_timeout(5.0)
+    client.set_timeout(6.0)
 
     try:
         world = client.load_world(args.carla_map)        
