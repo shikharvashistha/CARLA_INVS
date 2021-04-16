@@ -1,9 +1,17 @@
 # Distributed Dynamic Map Fusion with Federated Knowledge Distill in CARLA Simulation
+
+----------
+### TODO
+- [ ] SUMO Co-simulation Ph.I
+    - know how SUMO works, and how with CARLA
+    - collect related examples as initialization
+    - ?
+- [ ] SUMO Co-simulation Ph.II
+- [ ] SUMO Co-simulation Ph.III
+- [ ] SUMO Co-simulation Ph.IV
+
 <img src="./preview/test2.png" width = "400" alt="图片名称" align=center /><img src="./preview/test1.png" width = "400" alt="图片名称" align=center />
 
-
-
-[TOC]
 
 ## Citation
 
