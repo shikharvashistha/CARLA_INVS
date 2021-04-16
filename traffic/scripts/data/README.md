@@ -1,0 +1,1 @@
+The `*.xodr` files are not contained. Please copy them from `$CARLA_HOME/CarlaUE4/Content/Carla/Maps/OpenDrive`
