@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- generated on Fri Apr 16 15:26:01 2021 by Eclipse SUMO netconvert Version 55282404
+<!-- generated on Fri Apr 16 15:25:55 2021 by Eclipse SUMO netconvert Version 55282404
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
         <type-files value="/home/lab1112/workspace/CARLA_INVS/traffic/scripts/data/opendrive_netconvert.typ.xml"/>
-        <opendrive-files value="data/Town03.xodr"/>
+        <opendrive-files value="data/Town03_Opt.xodr"/>
     </input>
 
     <output>
-        <output-file value="/tmp/tmpf4k35n65/Town03.net.xml"/>
+        <output-file value="/tmp/tmp03h6r5qt/Town03_Opt.net.xml"/>
         <output.original-names value="true"/>
     </output>
 
