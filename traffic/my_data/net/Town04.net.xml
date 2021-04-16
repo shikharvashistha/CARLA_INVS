@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- generated on Mon Mar 22 22:10:31 2021 by Eclipse SUMO netconvert Version edcfe2cf
+<!-- generated on Fri Apr 16 10:18:17 2021 by Eclipse SUMO netconvert Version 55282404
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -8,7 +8,7 @@
     </input>
 
     <output>
-        <output-file value="/tmp/tmpldxxqd3e/Town04.net.xml"/>
+        <output-file value="/tmp/tmp5gty71tq/Town04.net.xml"/>
         <output.original-names value="true"/>
     </output>
 
@@ -3205,17 +3205,17 @@
     </lane>
   </edge>
   <tlLogic id="916" type="static" programID="0" offset="0">
-    <phase state="rrgrrrgrrrgr" duration="42"/>
-    <phase state="rryrrryrrryr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrrrgrrrrgrg" duration="42"/>
     <phase state="rrrryrrrryry" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
+    <phase state="grrrrgrgrrrr" duration="42"/>
+    <phase state="yrrrryryrrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rgrgrrrrgrrr" duration="42"/>
     <phase state="ryryrrrryrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="grrrrgrgrrrr" duration="42"/>
-    <phase state="yrrrryryrrrr" duration="3"/>
+    <phase state="rrgrrrgrrrgr" duration="42"/>
+    <phase state="rryrrryrrryr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1631"/>
     <param key="linkSignalID:1" value="1630"/>
@@ -3231,6 +3231,9 @@
     <param key="linkSignalID:11" value="1632"/>
   </tlLogic>
   <tlLogic id="335" type="static" programID="0" offset="0">
+    <phase state="rgrrrrgrrrrg" duration="42"/>
+    <phase state="ryrrrryrrrry" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrrgrrrrggrr" duration="42"/>
     <phase state="rrryrrrryyrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
@@ -3239,9 +3242,6 @@
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="grgrgrrrrrrr" duration="42"/>
     <phase state="yryryrrrrrrr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="rgrrrrgrrrrg" duration="42"/>
-    <phase state="ryrrrryrrrry" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1616"/>
     <param key="linkSignalID:1" value="1615"/>
@@ -3257,14 +3257,14 @@
     <param key="linkSignalID:11" value="1615"/>
   </tlLogic>
   <tlLogic id="785" type="static" programID="0" offset="0">
+    <phase state="rrgrrrrrggrr" duration="42"/>
+    <phase state="rryrrrrryyrr" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="ggrgrrrrrrrr" duration="42"/>
     <phase state="yyryrrrrrrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrrrgrgrrrgr" duration="42"/>
     <phase state="rrrryryrrryr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="rrgrrrrrggrr" duration="42"/>
-    <phase state="rryrrrrryyrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrrrrgrgrrrg" duration="42"/>
     <phase state="rrrrryryrrry" duration="3"/>
@@ -3286,11 +3286,11 @@
     <phase state="rrrrrgrrrggr" duration="42"/>
     <phase state="rrrrryrrryyr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="rrrrgrrgrrrg" duration="42"/>
-    <phase state="rrrryrryrrry" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rgrgrrgrrrrr" duration="42"/>
     <phase state="ryryrryrrrrr" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
+    <phase state="rrrrgrrgrrrg" duration="42"/>
+    <phase state="rrrryrryrrry" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="grgrrrrrgrrr" duration="42"/>
     <phase state="yryrrrrryrrr" duration="3"/>
@@ -3309,17 +3309,17 @@
     <param key="linkSignalID:11" value="1618"/>
   </tlLogic>
   <tlLogic id="621" type="static" programID="0" offset="0">
-    <phase state="rrgrrgrrrrgr" duration="42"/>
-    <phase state="rryrryrrrryr" duration="3"/>
+    <phase state="rrrgrrggrrrr" duration="42"/>
+    <phase state="rrryrryyrrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rgrrgrrrgrrr" duration="42"/>
     <phase state="ryrryrrryrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="rrrgrrggrrrr" duration="42"/>
-    <phase state="rrryrryyrrrr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="grrrrrrrrgrg" duration="42"/>
     <phase state="yrrrrrrrryry" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
+    <phase state="rrgrrgrrrrgr" duration="42"/>
+    <phase state="rryrryrrrryr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1622"/>
     <param key="linkSignalID:1" value="1624"/>
@@ -3335,17 +3335,17 @@
     <param key="linkSignalID:11" value="1622"/>
   </tlLogic>
   <tlLogic id="148" type="static" programID="0" offset="0">
+    <phase state="grrrrrrgrrrg" duration="42"/>
+    <phase state="yrrrrrryrrry" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
+    <phase state="rrrrrrgrgrgr" duration="42"/>
+    <phase state="rrrrrryryryr" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rgrrrgrrrgrr" duration="42"/>
     <phase state="ryrrryrrryrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrgggrrrrrrr" duration="42"/>
     <phase state="rryyyrrrrrrr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="rrrrrrgrgrgr" duration="42"/>
-    <phase state="rrrrrryryryr" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="grrrrrrgrrrg" duration="42"/>
-    <phase state="yrrrrrryrrry" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1609"/>
     <param key="linkSignalID:1" value="1610"/>
@@ -3361,14 +3361,14 @@
     <param key="linkSignalID:11" value="1609"/>
   </tlLogic>
   <tlLogic id="278" type="static" programID="0" offset="0">
+    <phase state="rrgrrg" duration="42"/>
+    <phase state="rryrry" duration="3"/>
+    <phase state="rrrrrr" duration="3"/>
     <phase state="rgrgrr" duration="42"/>
     <phase state="ryryrr" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <phase state="grrrgr" duration="42"/>
     <phase state="yrrryr" duration="3"/>
-    <phase state="rrrrrr" duration="3"/>
-    <phase state="rrgrrg" duration="42"/>
-    <phase state="rryrry" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1611"/>
     <param key="linkSignalID:1" value="1612"/>
@@ -3378,14 +3378,14 @@
     <param key="linkSignalID:5" value="1613"/>
   </tlLogic>
   <tlLogic id="1008" type="static" programID="0" offset="0">
+    <phase state="grgrrr" duration="42"/>
+    <phase state="yryrrr" duration="3"/>
+    <phase state="rrrrrr" duration="3"/>
     <phase state="rgrgrr" duration="42"/>
     <phase state="ryryrr" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <phase state="rrrrgg" duration="42"/>
     <phase state="rrrryy" duration="3"/>
-    <phase state="rrrrrr" duration="3"/>
-    <phase state="grgrrr" duration="42"/>
-    <phase state="yryrrr" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1635"/>
     <param key="linkSignalID:1" value="1636"/>
@@ -3412,14 +3412,14 @@
     <param key="linkSignalID:5" value="1638"/>
   </tlLogic>
   <tlLogic id="1197" type="static" programID="0" offset="0">
-    <phase state="grrrrg" duration="42"/>
-    <phase state="yrrrry" duration="3"/>
+    <phase state="rrggrr" duration="42"/>
+    <phase state="rryyrr" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <phase state="rgrrgr" duration="42"/>
     <phase state="ryrryr" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
-    <phase state="rrggrr" duration="42"/>
-    <phase state="rryyrr" duration="3"/>
+    <phase state="grrrrg" duration="42"/>
+    <phase state="yrrrry" duration="3"/>
     <phase state="rrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1640"/>
     <param key="linkSignalID:1" value="1642"/>
@@ -3432,14 +3432,14 @@
     <phase state="rrrgrrrgrgrr" duration="42"/>
     <phase state="rrryrrryryrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
+    <phase state="grrrgrgrrrrr" duration="42"/>
+    <phase state="yrrryryrrrrr" duration="3"/>
+    <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rggrrrrrgrrr" duration="42"/>
     <phase state="ryyrrrrryrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <phase state="rrrrrgrrrrgg" duration="42"/>
     <phase state="rrrrryrrrryy" duration="3"/>
-    <phase state="rrrrrrrrrrrr" duration="3"/>
-    <phase state="grrrgrgrrrrr" duration="42"/>
-    <phase state="yrrryryrrrrr" duration="3"/>
     <phase state="rrrrrrrrrrrr" duration="3"/>
     <param key="linkSignalID:0" value="1646"/>
     <param key="linkSignalID:1" value="1644"/>
@@ -3455,11 +3455,11 @@
     <param key="linkSignalID:11" value="1645"/>
   </tlLogic>
   <tlLogic id="1368" type="static" programID="0" offset="0">
-    <phase state="gggrrrrgrrrrg" duration="42"/>
-    <phase state="yyyrrrryrrrry" duration="3"/>
-    <phase state="rrrrrrrrrrrrr" duration="3"/>
     <phase state="rrrggggrrrrrr" duration="42"/>
     <phase state="rrryyyyrrrrrr" duration="3"/>
+    <phase state="rrrrrrrrrrrrr" duration="3"/>
+    <phase state="gggrrrrgrrrrg" duration="42"/>
+    <phase state="yyyrrrryrrrry" duration="3"/>
     <phase state="rrrrrrrrrrrrr" duration="3"/>
     <phase state="rrrrrrrrggggr" duration="42"/>
     <phase state="rrrrrrrryyyyr" duration="3"/>
