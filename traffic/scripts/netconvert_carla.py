@@ -386,7 +386,7 @@ def _netconvert_carla_impl(xodr_file, output, tmpdir, guess_tls=False):
             '--output.original-names',
             # Discard loading traffic lights as them will be inserted manually afterwards.
             '--tls.discard-loaded', 'true',
-        ])
+        ], stdout=subprocess.PIPE)
     except subprocess.CalledProcessError:
         raise RuntimeError('There was an error when executing netconvert.')
     else:
