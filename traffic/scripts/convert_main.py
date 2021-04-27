@@ -63,7 +63,7 @@ with Halo(text='Generate viewsettings.xml file.') as sh:
             sh.fail()
             # print_('viewsettings.xml file missing.')
     else:
-        sh.warn('GEN_VIEW skipped.')
+        sh.info('GEN_VIEW skipped.')
     pass    
 
 #=====================================================#
@@ -88,7 +88,7 @@ with Halo(text='Generate vtypes.rou.xml file.') as sh:
                 # print_('vtypes.rou.xml file generated.')
                 pass
     else:
-        sh.warn('GEN_VTYPE skipped.')
+        sh.info('GEN_VTYPE skipped.')
     pass
 
 #=====================================================#
@@ -112,7 +112,7 @@ with Halo(text='Generate *.net.xml file.') as sh:
                 # print_('%s.net.xml file generated.'%xodr_file.stem)
             pass
     else:
-        sh.warn('GEN_NET skipped.')
+        sh.info('GEN_NET skipped.')
     pass
 
 #=====================================================#
@@ -120,7 +120,7 @@ with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_STAT']:
         pass
     else:
-        sh.warn('GEN_STAT skipped.')
+        sh.info('GEN_STAT skipped.')
     pass
 
 #=====================================================#
@@ -128,5 +128,5 @@ with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_ROU']:
         pass
     else:
-        sh.warn('GEN_ROU skipped.')
+        sh.info('GEN_ROU skipped.')
     pass
