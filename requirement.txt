@@ -4,3 +4,5 @@ notebook
 numpy
 matplotlib
 lxml>=4.5.0
+halo
+picotui
