@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 import subprocess as sp
 from halo import Halo
-from enum import Enum
+import lxml.etree as ET
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
 
@@ -116,8 +116,65 @@ with Halo(text='Generate *.net.xml file.') as sh:
     pass
 
 #=====================================================#
+def generate_stat_xml():
+    root = ET.Element('city')
+    ## expand <general> element
+    _attribs = {
+        "inhabitants"       : "1000",
+        "households"        : "500",
+        "childrenAgeLimit"  : "19",
+        "retirementAgeLimit": "66",
+        "carRate"           : "0.58",
+        "unemploymentRate"  : "0.05",
+        "footDistanceLimit" : "250",
+        "incomingTraffic"   : "200",
+        "outgoingTraffic"   : "50",
+        "laborDemand"       : "1.05"
+    }
+    _general = ET.SubElement(root, 'general', **_attribs)
+
+    ## expand <parameters> element
+    _attribs = {
+        "carPreference"         : "0.50",
+        "meanTimePerKmInCity"   : "6",
+        "freeTimeActivityRate"  : "0.15",
+        "uniformRandomTraffic"  : "0.20",
+        "departureVariation"    : "300"
+    }
+    _parameters = ET.SubElement(root, 'parameters', **_attribs)
+
+    ## expand <population> element
+    _population = ET.SubElement(root, 'population')
+    ET.SubElement(_population, 'bracket', beginAge="0",  endAge="30", peopleNbr="30") # 30% in [0,30)
+    ET.SubElement(_population, 'bracket', beginAge="30", endAge="60", peopleNbr="40") # 40% in [30, 60)
+    ET.SubElement(_population, 'bracket', beginAge="60", endAge="90", peopleNbr="30") # 30% in [60, 90)
+
+    ## expand <workHours> element
+    _workHours = ET.SubElement(root, 'workHours')
+    ET.SubElement(_workHours, 'opening', hours='30600', proportion="0.30")
+    ET.SubElement(_workHours, 'opening', hours='30600', proportion="0.30")
+
+    ## expand <streets> element
+    _streets = ET.SubElement(root, 'streets')
+    #TODO: allocate "population" and "workPosition" on edge 
+
+    ## expand <cityGates> element
+    _cityGates = ET.SubElement(root, 'cityGates')
+    #TODO: allocate entrance on edge
+
+    ## temporary print and return
+    print( ET.tostring(root, pretty_print=True).decode('utf-8') )
+    return root
+
+generate_stat_xml()
 with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_STAT']:
+        # _obj = sp.run(['activitygen',
+        #         '--net-file', '%s.net.xml',
+        #         '--stat-file', '%s.stat.xml',
+        #         '--output-file', '%s.trips.rou.xml',
+        #         '--random']
+        # , capture_output=True)
         pass
     else:
         sh.info('GEN_STAT skipped.')
@@ -126,7 +183,12 @@ with Halo(text='Generate *.stat.xml file.') as sh:
 #=====================================================#
 with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_ROU']:
-        pass
+        _obj = sp.run(['duarouter',
+                '--net-file', '%s.net.xml',
+                '--route-files', '%s.trips.rou.xml',
+                '--output-file', '%s.rou.xml',
+                '--ignore-errors']
+        , capture_output=True)
     else:
         sh.info('GEN_ROU skipped.')
     pass
