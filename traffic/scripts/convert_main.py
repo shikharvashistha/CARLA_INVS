@@ -116,7 +116,7 @@ with Halo(text='Generate *.net.xml file.') as sh:
     pass
 
 #=====================================================#
-def generate_stat_xml():
+def generate_stat_xml(net_file):
     root = ET.Element('city')
     ## expand <general> element
     _attribs = {
@@ -135,7 +135,7 @@ def generate_stat_xml():
 
     ## expand <parameters> element
     _attribs = {
-        "carPreference"         : "0.50",
+        "carPreference"         : "1.00", #no other transportation
         "meanTimePerKmInCity"   : "6",
         "freeTimeActivityRate"  : "0.15",
         "uniformRandomTraffic"  : "0.20",
@@ -145,30 +145,39 @@ def generate_stat_xml():
 
     ## expand <population> element
     _population = ET.SubElement(root, 'population')
-    ET.SubElement(_population, 'bracket', beginAge="0",  endAge="30", peopleNbr="30") # 30% in [0,30)
-    ET.SubElement(_population, 'bracket', beginAge="30", endAge="60", peopleNbr="40") # 40% in [30, 60)
-    ET.SubElement(_population, 'bracket', beginAge="60", endAge="90", peopleNbr="30") # 30% in [60, 90)
+    ET.SubElement(_population, 'bracket', beginAge="0",  endAge="30", peopleNbr="50") # 50% in age [0,30)
+    ET.SubElement(_population, 'bracket', beginAge="30", endAge="60", peopleNbr="30") # 30% in age [30, 60)
+    ET.SubElement(_population, 'bracket', beginAge="60", endAge="90", peopleNbr="20") # 20% in age [60, 90)
 
-    ## expand <workHours> element
+    ## expand <workHours> element; FIXME: change to random
     _workHours = ET.SubElement(root, 'workHours')
-    ET.SubElement(_workHours, 'opening', hours='30600', proportion="0.30")
-    ET.SubElement(_workHours, 'opening', hours='30600', proportion="0.30")
+    ET.SubElement(_workHours, 'opening', hours='30600', proportion="0.30") #30% starts working at 0830;
+    ET.SubElement(_workHours, 'opening', hours='32400', proportion="0.70") #70% starts working at 0900.
+    ET.SubElement(_workHours, 'closing', hours='43200', proportion="0.20") #20% stops working at 1200;
+    ET.SubElement(_workHours, 'closing', hours='63000', proportion="0.20") #20% stops working at 1730;
+    ET.SubElement(_workHours, 'closing', hours='64800', proportion="0.60") #60% stops working at 1800.
 
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
-    #TODO: allocate "population" and "workPosition" on edge 
+    #TODO: allocate "population" and "workPosition" on edge
+    net_tree = ET.parse(net_file)
+    
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
     #TODO: allocate entrance on edge
 
-    ## temporary print and return
-    print( ET.tostring(root, pretty_print=True).decode('utf-8') )
+    ## return
+    # print( ET.tostring(root, pretty_print=True).decode('utf-8') )
     return root
 
 generate_stat_xml()
 with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_STAT']:
+        net_file_glob = NET_FOLDER.glob('*.net.xml')
+        for net_file in net_file_glob:
+            
+            pass
         # _obj = sp.run(['activitygen',
         #         '--net-file', '%s.net.xml',
         #         '--stat-file', '%s.stat.xml',
