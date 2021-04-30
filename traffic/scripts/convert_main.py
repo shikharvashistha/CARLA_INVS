@@ -133,14 +133,14 @@ def get_net_statistics(net_file):
             result['edges'].update({ _id:{'from':_from, 'to':_to} })
             #
             if _from in result['junctions']:
-                result['junctions'][_from]['out'].append(_from)
+                result['junctions'][_from]['out'].append(_id)
             else:
-                result['junctions'][_from] = {'centroid':None, 'shape':None, 'in':[], 'out':[_from]}
+                result['junctions'][_from] = {'centroid':None, 'shape':None, 'in':[], 'out':[_id]}
             #
             if _to in result['junctions']:
-                result['junctions'][_to]['in'].append(_to)
+                result['junctions'][_to]['in'].append(_id)
             else:
-                result['junctions'][_to]   = {'centroid':None, 'shape':None, 'in':[_to], 'out':[]}
+                result['junctions'][_to]   = {'centroid':None, 'shape':None, 'in':[_id], 'out':[]}
             pass
         pass
     ## get junction stat (id, centroid, shape)
@@ -208,6 +208,7 @@ def generate_stat_xml(net_file):
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
     #TODO: allocate "population" and "workPosition" on edge
+    [print(key, val['in'], val['out']) for key,val in _stat['junctions'].items()]
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
