@@ -3,6 +3,7 @@ plyfile
 notebook
 numpy
 matplotlib
+shapely
 lxml>=4.5.0
 halo
 picotui

@@ -4,6 +4,7 @@ import shutil
 import subprocess as sp
 from halo import Halo
 import lxml.etree as ET
+from shapely.geometry import Polygon
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
 
@@ -116,7 +117,54 @@ with Halo(text='Generate *.net.xml file.') as sh:
     pass
 
 #=====================================================#
+def get_net_statistics(net_file):
+    result = dict()
+    net_tree = ET.parse(net_file)
+    result['edges'] = dict()
+    result['junctions'] = dict()
+    ## get network size
+    _size = [float(x) for x in net_tree.find('location').get('convBoundary').split(',')]
+    result['size'] = _size
+    ## get normal edges stat (id, from, to)
+    for e in net_tree.iter('edge'):
+        if e.get('function') != 'internal':
+            _id, _from, _to = e.get('id'), e.get('from'), e.get('to')
+            assert(_from is not None); assert(_to is not None)
+            result['edges'].update({ _id:{'from':_from, 'to':_to} })
+            #
+            if _from in result['junctions']:
+                result['junctions'][_from]['out'].append(_from)
+            else:
+                result['junctions'][_from] = {'centroid':None, 'shape':None, 'in':[], 'out':[_from]}
+            #
+            if _to in result['junctions']:
+                result['junctions'][_to]['in'].append(_to)
+            else:
+                result['junctions'][_to]   = {'centroid':None, 'shape':None, 'in':[_to], 'out':[]}
+            pass
+        pass
+    ## get junction stat (id, centroid, shape)
+    for jc in net_tree.iter('junction'):
+        _id, _shape, _type = jc.get('id'), jc.get('shape'), jc.get('type')
+        if _id not in result['junctions']:
+            if _type!='internal':print('junction %s not connected.'%_id)
+        else:
+            _shape = [x.split(',') for x in _shape.split()]
+            _shape = [ [float(x[0]), float(x[1])] for x in _shape]
+            _c = Polygon([*_shape, _shape[0]]).centroid
+            _centroid = (_c.x, _c.y)
+            result['junctions'][_id]['centroid'] = _centroid
+            result['junctions'][_id]['shape'] = _shape
+            pass
+        pass
+    ##
+    # import json
+    # print(json.dumps(result, indent=4))
+    return result
+
 def generate_stat_xml(net_file):
+    ## get net_file statistics
+    _stat = get_net_statistics(net_file)
     root = ET.Element('city')
     ## expand <general> element
     _attribs = {
@@ -160,8 +208,6 @@ def generate_stat_xml(net_file):
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
     #TODO: allocate "population" and "workPosition" on edge
-    net_tree = ET.parse(net_file)
-    
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
@@ -171,7 +217,7 @@ def generate_stat_xml(net_file):
     # print( ET.tostring(root, pretty_print=True).decode('utf-8') )
     return root
 
-generate_stat_xml()
+generate_stat_xml('../my_data/net/Town02.net.xml')
 with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_STAT']:
         net_file_glob = NET_FOLDER.glob('*.net.xml')
