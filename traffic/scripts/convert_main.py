@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import math
 import shutil
 import subprocess as sp
 from halo import Halo
@@ -208,7 +209,11 @@ def generate_stat_xml(net_file):
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
     #TODO: allocate "population" and "workPosition" on edge
-    [print(key, val['in'], val['out']) for key,val in _stat['junctions'].items()]
+    _size = (_stat['size'][0]/2, _stat['size'][1]/2)
+    dist = lambda x: math.sqrt(sum([ pow(p[0]-p[1], 2) for p in zip(x, _size) ]))
+    _choices = [ (key, len(val['in']), dist(val['centroid'])) for key,val in _stat['junctions'].items() ]
+    _choices.sort(key=lambda x:x[2])
+    print(_choices)
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
