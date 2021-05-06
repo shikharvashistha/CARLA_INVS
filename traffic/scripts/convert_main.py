@@ -174,21 +174,21 @@ def generate_stat_xml(net_file):
         "childrenAgeLimit"  : "19",
         "retirementAgeLimit": "66",
         "carRate"           : "0.58",
-        "unemploymentRate"  : "0.05",
-        "footDistanceLimit" : "250",
-        "incomingTraffic"   : "200",
-        "outgoingTraffic"   : "50",
+        "unemploymentRate"  : "0.05", 
+        "footDistanceLimit" : "250", # (not used)
+        "incomingTraffic"   : "200", # number of traffic in to city
+        "outgoingTraffic"   : "50",  # number of traffic out of city
         "laborDemand"       : "1.05"
     }
     _general = ET.SubElement(root, 'general', **_attribs)
 
     ## expand <parameters> element
     _attribs = {
-        "carPreference"         : "1.00", #no other transportation
-        "meanTimePerKmInCity"   : "6",
-        "freeTimeActivityRate"  : "0.15",
-        "uniformRandomTraffic"  : "0.20",
-        "departureVariation"    : "300"
+        "carPreference"         : "1.00", # (no other transportation)
+        "meanTimePerKmInCity"   : "360",  # estimation of the time to drive 1km from bird eye's view (unit: second)
+        "freeTimeActivityRate"  : "0.15", # probability for one household to have a free-time activity
+        "uniformRandomTraffic"  : "0.20", # proportion of random traffic in the whole traffic demand
+        "departureVariation"    : "300"   # variance of the normal distribution for departure time (unit: second)
     }
     _parameters = ET.SubElement(root, 'parameters', **_attribs)
 
