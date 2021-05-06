@@ -228,28 +228,38 @@ with Halo(text='Generate *.stat.xml file.') as sh:
     if CHOICES['GEN_STAT']:
         net_file_glob = NET_FOLDER.glob('*.net.xml')
         for net_file in net_file_glob:
-            
+            _name = net_file.name.split('.net.xml')[0]
+            stat_xml_tree = generate_stat_xml(net_file)
+            stat_xml_tree.write( '%s.stat.xml'%(STAT_FOLDER/_name) )
             pass
-        # _obj = sp.run(['activitygen',
-        #         '--net-file', '%s.net.xml',
-        #         '--stat-file', '%s.stat.xml',
-        #         '--output-file', '%s.trips.rou.xml',
-        #         '--random']
-        # , capture_output=True)
         pass
     else:
         sh.info('GEN_STAT skipped.')
     pass
 
 #=====================================================#
-with Halo(text='Generate *.stat.xml file.') as sh:
+with Halo(text='Generate *.rou.xml file.') as sh:
     if CHOICES['GEN_ROU']:
-        _obj = sp.run(['duarouter',
-                '--net-file', '%s.net.xml',
-                '--route-files', '%s.trips.rou.xml',
-                '--output-file', '%s.rou.xml',
-                '--ignore-errors']
-        , capture_output=True)
+        stat_file_glob = STAT_FOLDER.glob('*.stat.xml')
+        for stat_file in stat_file_glob:
+            _name = stat_file.name.split('stat.xml')[0]
+            net_file = NET_FOLDER / '%s.net.xml'%_name
+            _prefix = ROU_FOLDER / _name
+            #
+            _obj = sp.run(['activitygen',
+                    '--net-file', str(net_file),
+                    '--stat-file', str(stat_file),
+                    '--output-file', '%s.trips.rou.xml'%_prefix,
+                    '--random']
+            , capture_output=True)
+            #
+            _obj = sp.run(['duarouter',
+                    '--net-file', str(net_file),
+                    '--route-files', '%s.trips.rou.xml'%_prefix,
+                    '--output-file', '%s.rou.xml'%_prefix,
+                    '--ignore-errors']
+            , capture_output=True)
+            pass       
     else:
         sh.info('GEN_ROU skipped.')
     pass
