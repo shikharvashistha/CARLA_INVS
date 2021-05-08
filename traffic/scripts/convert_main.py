@@ -6,6 +6,8 @@ import subprocess as sp
 from halo import Halo
 import lxml.etree as ET
 from shapely.geometry import Polygon
+import numpy as np
+from sklearn.cluster import KMeans
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
 
@@ -150,6 +152,9 @@ def get_net_statistics(net_file):
         if _id not in result['junctions']:
             if _type!='internal':print('junction %s not connected.'%_id)
         else:
+            if '.' in _id: #NOTE: ignore inter-connect junctions
+                result['junctions'].pop(_id)
+                continue
             _shape = [x.split(',') for x in _shape.split()]
             _shape = [ [float(x[0]), float(x[1])] for x in _shape]
             _c = Polygon([*_shape, _shape[0]]).centroid
@@ -209,11 +214,19 @@ def generate_stat_xml(net_file):
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
     #TODO: allocate "population" and "workPosition" on edge
-    _size = (_stat['size'][0]/2, _stat['size'][1]/2)
-    dist = lambda x: math.sqrt(sum([ pow(p[0]-p[1], 2) for p in zip(x, _size) ]))
+    _size = _stat['size']
+    _ord = ( (_size[2]-_size[0])/2, (_size[3]-_size[1])/2 )
+    dist = lambda x: math.sqrt(sum([ pow(p[0]-p[1], 2) for p in zip(x, _ord) ]))
     _choices = [ (key, len(val['in']), dist(val['centroid'])) for key,val in _stat['junctions'].items() ]
     _choices.sort(key=lambda x:x[2])
+    #
+    _choices_dist = np.array( list(zip(*_choices))[2] ).reshape(-1,1)
+    _tmp = np.argwhere( KMeans(3).fit(_choices_dist).labels_ == 1 )[0,0]
+    _work_junctions = _choices[:_tmp]
+
+    # 
     print(_choices)
+    print(_work_junctions)
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
