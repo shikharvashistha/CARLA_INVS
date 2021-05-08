@@ -211,22 +211,24 @@ def generate_stat_xml(net_file):
     ET.SubElement(_workHours, 'closing', hours='63000', proportion="0.20") #20% stops working at 1730;
     ET.SubElement(_workHours, 'closing', hours='64800', proportion="0.60") #60% stops working at 1800.
 
-    ## expand <streets> element
-    _streets = ET.SubElement(root, 'streets')
-    #TODO: allocate "population" and "workPosition" on edge
+    ## prepare statistics
     _size = _stat['size']
     _ord = ( (_size[2]-_size[0])/2, (_size[3]-_size[1])/2 )
     dist = lambda x: math.sqrt(sum([ pow(p[0]-p[1], 2) for p in zip(x, _ord) ]))
     _choices = [ (key, len(val['in']), dist(val['centroid'])) for key,val in _stat['junctions'].items() ]
-    _choices.sort(key=lambda x:x[2])
-    #
-    _choices_dist = np.array( list(zip(*_choices))[2] ).reshape(-1,1)
-    _tmp = np.argwhere( KMeans(3).fit(_choices_dist).labels_ == 1 )[0,0]
-    _work_junctions = _choices[:_tmp]
+    _choices.sort(key=lambda x:x[2]) #sort by distance to city center
 
-    # 
-    print(_choices)
-    print(_work_junctions)
+    ## expand <streets> element
+    _streets = ET.SubElement(root, 'streets')
+    # allocate edges for work position
+    _choices_dist = np.array( list(zip(*_choices))[2] ).reshape(-1,1)
+    _choices_cluster = KMeans(2).fit(_choices_dist).labels_
+    _tmp_idx = np.argwhere( _choices_cluster == _choices_cluster[-1] )[0,0]
+    _work_junctions = _choices[:_tmp_idx]
+    # allocate edges for households
+    _choices_cluster = KMeans(3).fit(_choices_dist).labels_
+    _tmp_idx = np.argwhere( _choices_cluster == _choices_cluster[-1] )[0,0]
+    _house_junctions = _choices[_tmp_idx:]
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
