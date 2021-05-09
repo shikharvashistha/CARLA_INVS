@@ -8,6 +8,7 @@ import lxml.etree as ET
 from shapely.geometry import Polygon
 import numpy as np
 from sklearn.cluster import KMeans
+from collections import Counter
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
 
@@ -220,22 +221,37 @@ def generate_stat_xml(net_file):
 
     ## expand <streets> element
     _streets = ET.SubElement(root, 'streets')
+    #
     # allocate edges for work position
     _choices_dist = np.array( list(zip(*_choices))[2] ).reshape(-1,1)
     _choices_cluster = KMeans(2).fit(_choices_dist).labels_
     _tmp_idx = np.argwhere( _choices_cluster == _choices_cluster[-1] )[0,0]
-    _work_junctions = _choices[:_tmp_idx]
+    _work_junctions = list(zip(*_choices[:_tmp_idx]))[0] #only use 'id'
+    _work_edges = list()
+    for j in _work_junctions:
+        _work_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['in'] ])
+    _work_edges = Counter( _work_edges )
+    for edge,val in _work_edges.items():
+        ET.SubElement(_streets, 'street', edge=edge, population=str(val), workPosition=str(val*10))
+    #
     # allocate edges for households
     _choices_cluster = KMeans(3).fit(_choices_dist).labels_
     _tmp_idx = np.argwhere( _choices_cluster == _choices_cluster[-1] )[0,0]
-    _house_junctions = _choices[_tmp_idx:]
+    _house_junctions = list(zip(*_choices[_tmp_idx:]))[0] #only use 'id
+    _house_edges = list()
+    for j in _house_junctions:
+        _house_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['out'] ])
+    _house_edges = Counter( _house_edges )
+    for edge,val in _house_edges.items():
+        ET.SubElement(_streets, 'street', edge=edge, population=str(val*10), workPosition=str(val))
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
     #TODO: allocate entrance on edge
 
     ## return
-    # print( ET.tostring(root, pretty_print=True).decode('utf-8') )
+    print(_choices)
+    print( ET.tostring(root, pretty_print=True).decode('utf-8') )
     return root
 
 generate_stat_xml('../my_data/net/Town02.net.xml')
