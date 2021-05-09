@@ -133,8 +133,9 @@ def get_net_statistics(net_file):
     for e in net_tree.iter('edge'):
         if e.get('function') != 'internal':
             _id, _from, _to = e.get('id'), e.get('from'), e.get('to')
+            _length = float( e.find('lane').get('length') ) #length specified by first lane
             assert(_from is not None); assert(_to is not None)
-            result['edges'].update({ _id:{'from':_from, 'to':_to} })
+            result['edges'].update({ _id:{'from':_from, 'to':_to, 'length':_length} })
             #
             if _from in result['junctions']:
                 result['junctions'][_from]['out'].append(_id)
@@ -229,7 +230,8 @@ def generate_stat_xml(net_file):
     _work_junctions = list(zip(*_choices[:_tmp_idx]))[0] #only use 'id'
     _work_edges = list()
     for j in _work_junctions:
-        _work_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['in'] ])
+        _work_edges.extend( _stat['junctions'][j]['in'] )
+        # _work_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['in'] ])
     _work_edges = Counter( _work_edges )
     for edge,val in _work_edges.items():
         ET.SubElement(_streets, 'street', edge=edge, population=str(val), workPosition=str(val*10))
@@ -240,17 +242,26 @@ def generate_stat_xml(net_file):
     _house_junctions = list(zip(*_choices[_tmp_idx:]))[0] #only use 'id
     _house_edges = list()
     for j in _house_junctions:
-        _house_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['out'] ])
+        _house_edges.extend( _stat['junctions'][j]['out'] )
+        # _house_edges.extend([ e.lstrip('-') for e in _stat['junctions'][j]['out'] ])
     _house_edges = Counter( _house_edges )
     for edge,val in _house_edges.items():
         ET.SubElement(_streets, 'street', edge=edge, population=str(val*10), workPosition=str(val))
 
     ## expand <cityGates> element
     _cityGates = ET.SubElement(root, 'cityGates')
-    #TODO: allocate entrance on edge
+    for edge,_ in _house_edges.most_common()[::-1]:
+        _edge = '-'+edge if ('-' not in edge) else edge.lstrip('-')
+        if _edge in _stat['edges']:
+            e_len = str( _stat['edges'][edge]['length']/2 )
+            _e_len = str( _stat['edges'][_edge]['length']/2 )
+            ET.SubElement(_cityGates, 'entrance', edge=edge, incoming="0.5", outgoing="0.5", pos=e_len)
+            ET.SubElement(_cityGates, 'entrance', edge=_edge, incoming="0.5", outgoing="0.5", pos=_e_len)
+            break
+        pass
 
     ## return
-    print(_choices)
+    # print(_choices)
     print( ET.tostring(root, pretty_print=True).decode('utf-8') )
     return root
 
