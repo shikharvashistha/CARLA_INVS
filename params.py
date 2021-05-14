@@ -51,11 +51,11 @@ class workSpace:
                 return self.__exit__(*sys.exc_info())
         else:
             pass
-        chdir(self.wrk)
+        os.chdir(self.wrk)
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        chdir(self.pwd)
+        os.chdir(self.pwd)
         if exc_tb: pass
         pass
     pass
