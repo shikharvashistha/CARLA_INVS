@@ -2,7 +2,7 @@
 import os, sys
 from pathlib import Path
 
-CARLA_PATH = Path('~/CARLA_0.9.11').expanduser()
+CARLA_PATH = Path('~/CARLA').expanduser()
 ROOT_PATH  = Path(__file__).parent
 
 # include CARLA egg file
