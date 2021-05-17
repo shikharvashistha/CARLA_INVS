@@ -6,17 +6,15 @@ import subprocess as sp
 from halo import Halo
 import lxml.etree as ET
 from shapely.geometry import Polygon
-import numpy as np
-from sklearn.cluster import KMeans
 from collections import Counter
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
 
-_PREFIX = Path('../my_data')
-GLOBAL_FOLDER = _PREFIX / 'global'; GLOBAL_FOLDER.mkdir(exist_ok=True, parents=True)
-NET_FOLDER    = _PREFIX / 'net';    NET_FOLDER.mkdir(exist_ok=True, parents=True)
-STAT_FOLDER   = _PREFIX / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents=True)
-ROU_FOLDER    = _PREFIX / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
+ROOT_FOLDER = Path('../my_data')
+GLOBAL_FOLDER = ROOT_FOLDER / 'global'; GLOBAL_FOLDER.mkdir(exist_ok=True, parents=True)
+NET_FOLDER    = ROOT_FOLDER / 'net';    NET_FOLDER.mkdir(exist_ok=True, parents=True)
+STAT_FOLDER   = ROOT_FOLDER / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents=True)
+ROU_FOLDER    = ROOT_FOLDER / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
 
 print_ = lambda x:print('[convert_main] {}'.format(x))
 OPTIONS = ['GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU']
@@ -171,6 +169,8 @@ def get_net_statistics(net_file):
     return result
 
 def generate_stat_xml(net_file):
+    import numpy as np
+    from sklearn.cluster import KMeans
     ## get net_file statistics
     _stat = get_net_statistics(net_file)
     root = ET.Element('city')
@@ -307,4 +307,27 @@ with Halo(text='Generate *.rou.xml file.') as sh:
         sh.succeed()
     else:
         sh.info('GEN_ROU skipped.')
+    pass
+
+with Halo(text='Generate *.sumocfg file.') as sh:
+    rou_file_glob = ROU_FOLDER.glob('*.rou.xml')
+    rou_file_glob = filter(lambda x:'.trips' not in str(x), rou_file_glob)
+    for rou_file in rou_file_glob:
+        name = rou_file.name.split('.rou.xml')[0]
+        NS = 'http://www.w3.org/2001/XMLSchema-instance'
+        _attr = '{%s}noNamespaceSchemaLocation'%(NS)
+        _xsd = 'http://sumo.dlr.de/xsd/sumoConfiguration.xsd'
+        root = ET.Element('configuration', attrib={_attr: _xsd})
+        #
+        _input = ET.SubElement(root, 'input')
+        ET.SubElement(_input, 'net-file', value='net/%s.net.xml'%name)
+        ET.SubElement(_input, 'route-files', value='global/carlavtypes.rou.xml,rou/%s.rou.xml'%name)
+        #
+        _gui_only = ET.SubElement(root, 'gui_only')
+        ET.SubElement(_gui_only, 'gui-settings-file', value='global/viewsettings.xml')
+        #
+        root_tree = ET.ElementTree(root)
+        root_tree.write( '%s.sumocfg'%(ROOT_FOLDER/name), pretty_print=True, xml_declaration=True, encoding='UTF-8' )
+        pass
+    sh.succeed()
     pass
