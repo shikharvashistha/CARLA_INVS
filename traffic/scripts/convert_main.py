@@ -309,6 +309,7 @@ with Halo(text='Generate *.rou.xml file.') as sh:
         sh.info('GEN_ROU skipped.')
     pass
 
+#=====================================================#
 with Halo(text='Generate *.sumocfg file.') as sh:
     rou_file_glob = ROU_FOLDER.glob('*.rou.xml')
     rou_file_glob = filter(lambda x:'.trips' not in str(x), rou_file_glob)
