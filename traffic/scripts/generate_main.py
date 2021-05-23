@@ -17,7 +17,18 @@ STAT_FOLDER   = ROOT_FOLDER / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents
 ROU_FOLDER    = ROOT_FOLDER / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
 
 print_ = lambda x:print('[convert_main] {}'.format(x))
-OPTIONS = ['GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU']
+OPTIONS = [ 'GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU' ]
+O_FLAGS = [  False,      False,       False,     True,       True    ]
+STATISTICS = {
+    # Total numberr of inhabitants
+    "inhabitants": 1000,
+    # Estimation of the time to drive 1km from bird eye's view (unit: second)
+    "meanTimePerKmInCity": 360,
+    # variance of the normal distribution for departure time (unit: second)
+    "departureVariation": 300,
+    # proportion of random traffic in the whole traffic demand
+    "uniformRandomTraffic": 0.20,
+}
 
 #=====================================================#
 if True: #for code folding
@@ -26,7 +37,7 @@ if True: #for code folding
     from picotui.widgets import (Dialog, WCheckbox, WButton, ACTION_OK)
 
     _choices = ['%d. %s'%(i+1,x) for (i,x) in enumerate(OPTIONS)]
-    _status  = [WCheckbox(x, choice=False) for x in _choices] 
+    _status  = [WCheckbox(x, choice=f) for x,f in zip(_choices,O_FLAGS)] 
     with Context(cls=True):
         _width  = 4 + max( [len(x) for x in _choices] )
         _height = 1 + len(_choices)
@@ -176,9 +187,9 @@ def generate_stat_xml(net_file):
     root = ET.Element('city')
     ## expand <general> element
     _attribs = {
-        "inhabitants"       : "1000",
-        "households"        : "500",
-        "childrenAgeLimit"  : "19",
+        "inhabitants"       : str( STATISTICS["inhabitants"] ),
+        "households"        : str(int( 0.55*STATISTICS["inhabitants"] )),
+        "childrenAgeLimit"  : "18", # (not used) for school-household traffic
         "retirementAgeLimit": "66",
         "carRate"           : "0.58",
         "unemploymentRate"  : "0.05", 
@@ -192,10 +203,10 @@ def generate_stat_xml(net_file):
     ## expand <parameters> element
     _attribs = {
         "carPreference"         : "1.00", # (no other transportation)
-        "meanTimePerKmInCity"   : "360",  # estimation of the time to drive 1km from bird eye's view (unit: second)
+        "meanTimePerKmInCity"   : str( STATISTICS["meanTimePerKmInCity"] ),
         "freeTimeActivityRate"  : "0.15", # probability for one household to have a free-time activity
-        "uniformRandomTraffic"  : "0.20", # proportion of random traffic in the whole traffic demand
-        "departureVariation"    : "300"   # variance of the normal distribution for departure time (unit: second)
+        "uniformRandomTraffic"  : str( STATISTICS["STATISTICS"] ),
+        "departureVariation"    : str( STATISTICS["departureVariation"] )
     }
     _parameters = ET.SubElement(root, 'parameters', **_attribs)
 
