@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
+## amend relative import
+import sys
 from pathlib import Path
+sys.path.append( Path(__file__).resolve().parent.as_posix() ) #file path
+## amend SUMO path
+import os, sys
+if 'SUMO_HOME' in os.environ:
+    SUMO_LIB = Path(os.environ['SUMO_HOME'], 'tools')
+    sys.path.append( SUMO_LIB.as_posix() )
+else:
+    sys.exit("please declare environment variable 'SUMO_HOME'")
+## normal import
 import math
 import shutil
 import subprocess as sp
@@ -9,16 +20,19 @@ from shapely.geometry import Polygon
 from collections import Counter
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
+from utils import *
 
 ROOT_FOLDER = Path('../my_data')
 GLOBAL_FOLDER = ROOT_FOLDER / 'global'; GLOBAL_FOLDER.mkdir(exist_ok=True, parents=True)
 NET_FOLDER    = ROOT_FOLDER / 'net';    NET_FOLDER.mkdir(exist_ok=True, parents=True)
 STAT_FOLDER   = ROOT_FOLDER / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents=True)
 ROU_FOLDER    = ROOT_FOLDER / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
+TRACES_FOLDER = ( ROOT_FOLDER / '..' / 'my_traces' ).resolve()
+TRACES_FOLDER.mkdir(exist_ok=True, parents=True)
 
 print_ = lambda x:print('[convert_main] {}'.format(x))
-OPTIONS = [ 'GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU' ]
-O_FLAGS = [  False,      False,       False,     True,       True    ]
+OPTIONS = [ 'GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU', 'RUN_TRACES' ]
+O_FLAGS = [  False,      False,       False,     True,       True,      True        ]
 STATISTICS = {
     # Total numberr of inhabitants
     "inhabitants": 1000,
@@ -342,4 +356,31 @@ with Halo(text='Generate *.sumocfg file.') as sh:
         root_tree.write( '%s.sumocfg'%(ROOT_FOLDER/name), pretty_print=True, xml_declaration=True, encoding='UTF-8' )
         pass
     sh.succeed()
+    pass
+
+#=====================================================#
+with Halo(text='Run and Generate traces file.') as sh:
+    if CHOICES['RUN_TRACES']:
+        cfg_file_glob = ROOT_FOLDER.glob('*.sumocfg')
+        for cfg_file in cfg_file_glob:
+            _name = cfg_file.name.split('.sumocfg')[0]
+            fcd_file = '%s_fcd.xml'%(TRACES_FOLDER/_name)
+            #
+            sh.start(text='[%s] Run trace simulation.'%_name)
+            _obj = sp.run(['sumo',
+                '-c', cfg_file,
+                '--fcd-output', fcd_file
+            ], capture_output=True)
+            #
+            sh.text = '[%s] Collect trace as `ipg`.'%_name
+            with WorkSpace(SUMO_LIB) as ws:
+                _obj = sp.run(['./traceExporter.py',
+                    '--fcd-input', fcd_file,
+                    '--ipg-output', '%s_ipg.txt'%(TRACES_FOLDER/_name)
+                ], capture_output=True)
+            #
+            sh.succeed()
+            pass
+    else:
+        sh.info('RUN_TRACES skipped.')
     pass
