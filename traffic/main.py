@@ -18,8 +18,16 @@ import carla
 import sumolib, traci
 from utils import *
 
-def main(map_name):
+TRAFFIC_DIRECTORY = Path(__file__).resolve().parent
+OUTPUT_DIRECTORY = TRAFFIC_DIRECTORY / 'output'
+DATA_DIRECTORY   = TRAFFIC_DIRECTORY / 'my_data'
 
+def main(map_name):
+    # with WorkSpace(OUTPUT_DIRECTORY) as ws:
+    OUTPUT_DIRECTORY.mkdir(exist_ok=True)
+    sp.run([ 'sumo', '-c', '%s.sumocfg'%(DATA_DIRECTORY/map_name),
+                '--fcd-output', '%s_fcd.xml'%(OUTPUT_DIRECTORY/map_name)
+    ])
     pass
 
 if __name__=="__main__":

@@ -25,7 +25,7 @@ class WorkSpace:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        sys.path.remove( self.wrk.as_posix() )
+        # sys.path.remove( self.wrk.as_posix() ) #FIXME: ?
         os.chdir(self.pwd)
         if exc_tb: pass
         pass
