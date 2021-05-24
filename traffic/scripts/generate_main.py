@@ -205,7 +205,7 @@ def generate_stat_xml(net_file):
         "carPreference"         : "1.00", # (no other transportation)
         "meanTimePerKmInCity"   : str( STATISTICS["meanTimePerKmInCity"] ),
         "freeTimeActivityRate"  : "0.15", # probability for one household to have a free-time activity
-        "uniformRandomTraffic"  : str( STATISTICS["STATISTICS"] ),
+        "uniformRandomTraffic"  : str( STATISTICS["uniformRandomTraffic"] ),
         "departureVariation"    : str( STATISTICS["departureVariation"] )
     }
     _parameters = ET.SubElement(root, 'parameters', **_attribs)

@@ -11,18 +11,24 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("please declare environment variable 'SUMO_HOME'")
 ## normal import
+from sys import argv
+import subprocess as sp
 import argparse
 import carla
 import sumolib, traci
+from utils import *
 
-def main():
+def main(map_name):
 
     pass
 
 if __name__=="__main__":
     try:
-        main()
+        if len(argv)==2:
+            main(argv[1])
+        else:
+            main( input('Map name to run: ') )
     except Exception as e:
-        raise e#print(e)
+        raise e #print(e)
     finally:
-        pass#exit()
+        pass #exit()
