@@ -10,3 +10,4 @@ PCDet/build
 PCDet/tools/cfgs/*.yaml
 # for traffic
 traffic/my_data
+traffic/my_traces

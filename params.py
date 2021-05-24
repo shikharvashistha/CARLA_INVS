@@ -2,7 +2,7 @@
 import os, sys
 from pathlib import Path
 
-CARLA_PATH = Path('~/CARLA_0.9.11').expanduser()
+CARLA_PATH = Path('~/CARLA').expanduser()
 ROOT_PATH  = Path(__file__).parent
 
 # include CARLA egg file
@@ -51,11 +51,11 @@ class workSpace:
                 return self.__exit__(*sys.exc_info())
         else:
             pass
-        chdir(self.wrk)
+        os.chdir(self.wrk)
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        chdir(self.pwd)
+        os.chdir(self.pwd)
         if exc_tb: pass
         pass
     pass

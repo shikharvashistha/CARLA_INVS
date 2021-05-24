@@ -1,25 +1,48 @@
 #!/usr/bin/env python3
+## amend relative import
+import sys
 from pathlib import Path
+sys.path.append( Path(__file__).resolve().parent.as_posix() ) #file path
+## amend SUMO path
+import os, sys
+if 'SUMO_HOME' in os.environ:
+    SUMO_LIB = Path(os.environ['SUMO_HOME'], 'tools')
+    sys.path.append( SUMO_LIB.as_posix() )
+else:
+    sys.exit("please declare environment variable 'SUMO_HOME'")
+## normal import
 import math
 import shutil
 import subprocess as sp
 from halo import Halo
 import lxml.etree as ET
 from shapely.geometry import Polygon
-import numpy as np
-from sklearn.cluster import KMeans
 from collections import Counter
 import create_sumo_vtypes as vtypes
 import netconvert_carla as net
+from utils import *
 
-_PREFIX = Path('../my_data')
-GLOBAL_FOLDER = _PREFIX / 'global'; GLOBAL_FOLDER.mkdir(exist_ok=True, parents=True)
-NET_FOLDER    = _PREFIX / 'net';    NET_FOLDER.mkdir(exist_ok=True, parents=True)
-STAT_FOLDER   = _PREFIX / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents=True)
-ROU_FOLDER    = _PREFIX / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
+ROOT_FOLDER = Path('../my_data')
+GLOBAL_FOLDER = ROOT_FOLDER / 'global'; GLOBAL_FOLDER.mkdir(exist_ok=True, parents=True)
+NET_FOLDER    = ROOT_FOLDER / 'net';    NET_FOLDER.mkdir(exist_ok=True, parents=True)
+STAT_FOLDER   = ROOT_FOLDER / 'stat';   STAT_FOLDER.mkdir(exist_ok=True, parents=True)
+ROU_FOLDER    = ROOT_FOLDER / 'rou';    ROU_FOLDER.mkdir(exist_ok=True, parents=True)
+TRACES_FOLDER = ( ROOT_FOLDER / '..' / 'my_traces' ).resolve()
+TRACES_FOLDER.mkdir(exist_ok=True, parents=True)
 
 print_ = lambda x:print('[convert_main] {}'.format(x))
-OPTIONS = ['GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU']
+OPTIONS = [ 'GEN_VIEW', 'GEN_VTYPE', 'GEN_NET', 'GEN_STAT', 'GEN_ROU', 'RUN_TRACES' ]
+O_FLAGS = [  False,      False,       False,     True,       True,      True        ]
+STATISTICS = {
+    # Total numberr of inhabitants
+    "inhabitants": 1000,
+    # Estimation of the time to drive 1km from bird eye's view (unit: second)
+    "meanTimePerKmInCity": 360,
+    # variance of the normal distribution for departure time (unit: second)
+    "departureVariation": 300,
+    # proportion of random traffic in the whole traffic demand
+    "uniformRandomTraffic": 0.20,
+}
 
 #=====================================================#
 if True: #for code folding
@@ -28,7 +51,7 @@ if True: #for code folding
     from picotui.widgets import (Dialog, WCheckbox, WButton, ACTION_OK)
 
     _choices = ['%d. %s'%(i+1,x) for (i,x) in enumerate(OPTIONS)]
-    _status  = [WCheckbox(x, choice=False) for x in _choices] 
+    _status  = [WCheckbox(x, choice=f) for x,f in zip(_choices,O_FLAGS)] 
     with Context(cls=True):
         _width  = 4 + max( [len(x) for x in _choices] )
         _height = 1 + len(_choices)
@@ -171,14 +194,16 @@ def get_net_statistics(net_file):
     return result
 
 def generate_stat_xml(net_file):
+    import numpy as np
+    from sklearn.cluster import KMeans
     ## get net_file statistics
     _stat = get_net_statistics(net_file)
     root = ET.Element('city')
     ## expand <general> element
     _attribs = {
-        "inhabitants"       : "1000",
-        "households"        : "500",
-        "childrenAgeLimit"  : "19",
+        "inhabitants"       : str( STATISTICS["inhabitants"] ),
+        "households"        : str(int( 0.55*STATISTICS["inhabitants"] )),
+        "childrenAgeLimit"  : "18", # (not used) for school-household traffic
         "retirementAgeLimit": "66",
         "carRate"           : "0.58",
         "unemploymentRate"  : "0.05", 
@@ -192,10 +217,10 @@ def generate_stat_xml(net_file):
     ## expand <parameters> element
     _attribs = {
         "carPreference"         : "1.00", # (no other transportation)
-        "meanTimePerKmInCity"   : "360",  # estimation of the time to drive 1km from bird eye's view (unit: second)
+        "meanTimePerKmInCity"   : str( STATISTICS["meanTimePerKmInCity"] ),
         "freeTimeActivityRate"  : "0.15", # probability for one household to have a free-time activity
-        "uniformRandomTraffic"  : "0.20", # proportion of random traffic in the whole traffic demand
-        "departureVariation"    : "300"   # variance of the normal distribution for departure time (unit: second)
+        "uniformRandomTraffic"  : str( STATISTICS["uniformRandomTraffic"] ),
+        "departureVariation"    : str( STATISTICS["departureVariation"] )
     }
     _parameters = ET.SubElement(root, 'parameters', **_attribs)
 
@@ -307,4 +332,55 @@ with Halo(text='Generate *.rou.xml file.') as sh:
         sh.succeed()
     else:
         sh.info('GEN_ROU skipped.')
+    pass
+
+#=====================================================#
+with Halo(text='Generate *.sumocfg file.') as sh:
+    rou_file_glob = ROU_FOLDER.glob('*.rou.xml')
+    rou_file_glob = filter(lambda x:'.trips' not in str(x), rou_file_glob)
+    for rou_file in rou_file_glob:
+        name = rou_file.name.split('.rou.xml')[0]
+        NS = 'http://www.w3.org/2001/XMLSchema-instance'
+        _attr = '{%s}noNamespaceSchemaLocation'%(NS)
+        _xsd = 'http://sumo.dlr.de/xsd/sumoConfiguration.xsd'
+        root = ET.Element('configuration', attrib={_attr: _xsd})
+        #
+        _input = ET.SubElement(root, 'input')
+        ET.SubElement(_input, 'net-file', value='net/%s.net.xml'%name)
+        ET.SubElement(_input, 'route-files', value='global/carlavtypes.rou.xml,rou/%s.rou.xml'%name)
+        #
+        _gui_only = ET.SubElement(root, 'gui_only')
+        ET.SubElement(_gui_only, 'gui-settings-file', value='global/viewsettings.xml')
+        #
+        root_tree = ET.ElementTree(root)
+        root_tree.write( '%s.sumocfg'%(ROOT_FOLDER/name), pretty_print=True, xml_declaration=True, encoding='UTF-8' )
+        pass
+    sh.succeed()
+    pass
+
+#=====================================================#
+with Halo(text='Run and Generate traces file.') as sh:
+    if CHOICES['RUN_TRACES']:
+        cfg_file_glob = ROOT_FOLDER.glob('*.sumocfg')
+        for cfg_file in cfg_file_glob:
+            _name = cfg_file.name.split('.sumocfg')[0]
+            fcd_file = '%s_fcd.xml'%(TRACES_FOLDER/_name)
+            #
+            sh.start(text='[%s] Run trace simulation.'%_name)
+            _obj = sp.run(['sumo',
+                '-c', cfg_file,
+                '--fcd-output', fcd_file
+            ], capture_output=True)
+            #
+            sh.text = '[%s] Collect trace as `ipg`.'%_name
+            with WorkSpace(SUMO_LIB) as ws:
+                _obj = sp.run(['./traceExporter.py',
+                    '--fcd-input', fcd_file,
+                    '--ipg-output', '%s_ipg.txt'%(TRACES_FOLDER/_name)
+                ], capture_output=True)
+            #
+            sh.succeed()
+            pass
+    else:
+        sh.info('RUN_TRACES skipped.')
     pass
