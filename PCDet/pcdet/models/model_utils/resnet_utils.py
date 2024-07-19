@@ -1,4 +1,5 @@
 import spconv
+from spconv.pytorch.modules import SparseModule
 from torch import nn
 
 
@@ -14,7 +15,7 @@ def conv1x1(in_planes, out_planes, stride=1, indice_key=None):
                      padding=1, bias=False, indice_key=indice_key)
 
 
-class SparseBasicBlock(spconv.SparseModule):
+class SparseBasicBlock(SparseModule):
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, indice_key=None, norm_fn=None):

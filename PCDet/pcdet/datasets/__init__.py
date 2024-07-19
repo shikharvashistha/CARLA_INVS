@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 from ..config import cfg
 from .dataset import DatasetTemplate
-from .kitti.kitti_dataset import BaseKittiDataset, KittiDataset
+from .kitti.kitti_dataset_train import BaseKittiDataset, KittiDataset
 
 __all__ = {
     'DatasetTemplate': DatasetTemplate,

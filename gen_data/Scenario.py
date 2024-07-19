@@ -10,10 +10,11 @@ sys.path.append( Path(__file__).resolve().parent.as_posix() ) #file path
 from params import *
 
 try:
-    _egg_file = sorted(Path(CARLA_PATH, 'PythonAPI/carla/dist').expanduser().glob('carla-*%d.*-%s.egg'%(
-        sys.version_info.major,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'
-    )))[0].as_posix()
+    _egg_file = '/home/user/Desktop/shikharvashistha/carla/PythonAPI/carla/dist/carla-0.9.14-py3.7-linux-x86_64.egg'
+    # _egg_file = sorted(Path(CARLA_PATH, 'PythonAPI/carla/dist').glob('carla-*%d.*-%s.egg'%(
+    #     sys.version_info.major,
+    #     'win-amd64' if os.name=='nt' else 'linux-x86_64'
+    # )))[0].as_posix()
     sys.path.append(_egg_file)
 except IndexError:
     print('CARLA Egg File Not Found.')
@@ -48,7 +49,7 @@ except IndexError:
     pass
 
 from agents.navigation.behavior_agent import BehaviorAgent  # pylint: disable=import-error
-from agents.navigation.roaming_agent import RoamingAgent  # pylint: disable=import-error
+# from agents.navigation.roaming_agent import RoamingAgent  # pylint: disable=import-error
 from agents.navigation.basic_agent import BasicAgent  # pylint: disable=import-error
 
 from utils.get2Dlabel import ClientSideBoundingBoxes

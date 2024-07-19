@@ -17,7 +17,7 @@ install:install-spconv
 install-spconv:
 	@echo -e '\nPlease ensure you have CUDA 9.0+ and cuDNN installed! (press ENTER to continue...)'; read -p ''
 
-	sudo apt install libboost-all-dev -y
+	sudo apt install libboost-all-dev -yspconv
 	# sudo apt install llvm-10.0-dev -y; sudo ln -s /usr/bin/llvm-config-10 /usr/bin/llvm-config
 	pip3 install cmake --user --upgrade
 	pip3 install "torch>=1.1,<=1.4" --user

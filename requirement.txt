@@ -2,7 +2,7 @@ open3d>=0.10
 plyfile
 notebook
 numpy
-sklearn
+scikit-learn
 matplotlib
 shapely
 lxml>=4.5.0
